@@ -1,37 +1,39 @@
-# Security Policy
+#!/bin/bash
 
-## Supported Versions
+GET() {
+    curl -s "https://malware.ai/api/analysis/$ANY_ID" --header "Authorization: Bearer $API_KEY"
+}
 
-We are committed to maintaining the security of our projects. Below is a table showing which versions of the project are currently supported with security updates. We recommend using a supported version to ensure that your deployment remains secure.
+DISPLAY_USAGE() {
+    echo "Usage: Inlyse API Fetcher: $0 -k [API_KEY] -a [ANALYSIS_ID]"
+}
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+HELP() {
+    DISPLAY_USAGE
+    cat << EOF
+[-k, --api-key]: Enter Inlyse API key after argument
+[-a, --analysis-id]: Enter analysis ID after argument
+[-h, --help]: Display this help text
+EOF
+}
 
-Security updates are provided for major releases, with only critical vulnerabilities being addressed for older versions. Versions marked with a "❌" are no longer receiving security updates, and we advise upgrading to a supported version.
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -k|--api-key) API_KEY="$2"; shift 2;;
+        -a|--analysis-id) ANY_ID="$2"; shift 2;;
+        -h|--help) HELP; exit 0;;
+        *) echo "Unknown option: $1"; DISPLAY_USAGE; exit 1;;
+    esac
+done
 
-## Reporting a Vulnerability
+if [[ -z "$API_KEY" ]]; then
+    echo "API Key cannot be empty."
+    exit 1
+fi
 
-If you discover a security vulnerability, we encourage responsible disclosure to help us maintain the integrity of our software. Please follow the steps below to report any issues you find:
+if [[ -z "$ANY_ID" ]]; then
+    echo "Analysis ID cannot be empty."
+    exit 1
+fi
 
-1. **Contact Us**: 
-   - Send a detailed report of the vulnerability to [info@nathannetwork.com](mailto:info@nathannetwork.com).
-   - Include any relevant information, such as steps to reproduce the issue, potential impact, and any proof-of-concept code, if applicable.
-   
-2. **Response Timeline**: 
-   - We will acknowledge your report within **48 hours**.
-   - We will provide you with regular updates on the status of the issue, typically every **7 days**, until the vulnerability is resolved or deemed non-critical.
-
-3. **After Reporting**:
-   - Once we verify the issue, we will work to resolve it in a timely manner.
-   - You will be notified when the issue has been patched, along with the release version containing the fix.
-   - If the report is deemed invalid or non-critical, we will provide a clear explanation of why it is not a security concern.
-
-4. **Confidentiality**: 
-   - We appreciate your discretion when reporting vulnerabilities and ask that you refrain from publicly disclosing the issue until we have had a chance to address it.
-   - Your privacy will be respected, and any personal information you provide will be handled in accordance with our privacy policies.
-
-We take security very seriously, and your contributions to improving the safety of our software are greatly appreciated. Thank you for helping us protect our users!
+GET
